@@ -1,0 +1,26 @@
+services:
+  facemesh-api:
+    hostname: api
+    container_name: api
+    build: ./api
+    ports:
+      - "9010:9010"
+    environment:
+      - PYTHONUNBUFFERED=1
+    networks:
+      - facemesh-network
+
+  facemesh-app:
+    hostname: app
+    container_name: app
+    build: ./application
+    ports:
+      - "9009:9009"
+    environment:
+      - PYTHONUNBUFFERED=1
+    networks:
+      - facemesh-network
+
+networks:
+  facemesh-network:
+    driver: bridge

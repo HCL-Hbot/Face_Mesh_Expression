@@ -1,0 +1,17 @@
+autokeras
+tensorflow==2.17.0
+dm-tree
+keras-tuner
+keras-nlp
+opencv-python
+matplotlib
+scikit-learn
+pandas
+mediapipe
+graphviz
+Flask-SocketIO
+markitdown
+pydot
+tensorflow
+rclpy
+IPython

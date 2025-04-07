@@ -1,0 +1,194 @@
+<!--
+    MeshExpress - Real-time Face Mesh and Emotion Detection Web Interface
+    
+    This page provides a web interface for real-time face mesh and emotion detection using:
+    - WebSocket communication via Socket.IO for real-time video streaming
+    - Model management through file uploads
+    - Side-by-side display of original and processed video feeds
+    
+    Dependencies:
+    - Socket.IO client library v4.7.4
+-->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MeshExpress</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.4/socket.io.min.js"></script>
+    <style>
+        /* Container for side-by-side video display */
+        .video-container {
+            display: flex;  /* Use flexbox for horizontal layout */
+            gap: 10px;     /* Space between video elements */
+        }
+        /* Ensure videos maintain aspect ratio and fill container width */
+        .video-container video,
+        .video-container img {
+            width: 100%;   /* Fill container width */
+        }
+    </style>
+</head>
+
+<body>
+    <h1>MeshExpress</h1>
+
+    <div id="modelUpload">
+        <h3>Model Management</h3>
+        <form id="uploadForm">
+            <input type="file" id="modelFile" accept=".keras" required>
+            <button type="submit">Upload Model</button>
+        </form>
+        <p id="modelStatus" style="color: gray;">No model loaded</p>
+    </div>
+
+    <p>Real-time face mesh and emotion detection</p>
+
+    <div class="video-container">
+        <div>
+            <h3>Original Video Feed</h3>
+            <video id="originalVideo" autoplay></video>
+        </div>
+        <div>
+            <h3>Manipulated Video Feed</h3>
+            <img id="manipulatedVideo" alt="Manipulated Video Feed" />
+        </div>
+    </div>
+
+	<script>
+    /**
+     * Model Upload Handler
+     * Manages the upload of .keras model files to the server
+     * Updates status display to show upload progress and results
+     */
+    document.getElementById('uploadForm').onsubmit = async function(e) {
+        e.preventDefault();
+        
+        const fileInput = document.getElementById('modelFile');
+        const statusEl = document.getElementById('modelStatus');
+        
+        if (!fileInput.files.length) {
+            statusEl.textContent = 'Please select a file';
+            statusEl.style.color = 'red';
+            return;
+        }
+        
+        const formData = new FormData();
+        formData.append('model', fileInput.files[0]);
+        
+        statusEl.textContent = 'Uploading...';
+        statusEl.style.color = 'blue';
+        
+        try {
+            const response = await fetch('/upload_model', {
+                method: 'POST',
+                body: formData
+            });
+            
+            const result = await response.json();
+            
+            if (response.ok) {
+                statusEl.textContent = result.message;
+                statusEl.style.color = 'green';
+            } else {
+                statusEl.textContent = result.error;
+                statusEl.style.color = 'red';
+            }
+        } catch (error) {
+            statusEl.textContent = 'Upload failed: ' + error.message;
+            statusEl.style.color = 'red';
+        }
+    };
+
+    // DOM Elements for video streams
+    const video = document.getElementById('originalVideo');
+    const manipulatedVideo = document.getElementById('manipulatedVideo');
+
+    /**
+     * Initializes the webcam video stream
+     * Requests user permission and sets up video feed with HD resolution
+     * Begins frame processing once metadata is loaded
+     */
+    const startVideoStream = async () => {
+        const stream = await navigator.mediaDevices.getUserMedia({
+            video: { width: { ideal: 1280 }, height: { ideal: 720 } }
+        });
+        video.srcObject = stream;
+        video.onloadedmetadata = () => {
+            video.play();
+            sendFrame(); // Start sending frames only after metadata is loaded
+        };
+    };
+
+    // Initialize Socket.IO connection for real-time communication
+    const socket = io();
+    
+    /**
+     * Frame Processing Loop
+     * Captures frames from video feed, processes them, and sends to server
+     * - Creates temporary canvas for frame capture
+     * - Mirrors the video horizontally for natural interaction
+     * - Converts frame to blob and sends via WebSocket
+     * - Maintains processing loop through requestAnimationFrame
+     */
+    const sendFrame = () => {
+        // Ensure video has valid dimensions
+        if (!video.videoWidth || !video.videoHeight) {
+            return requestAnimationFrame(sendFrame);
+        }
+
+        // Create temporary canvas for frame capture
+        const canvas = document.createElement('canvas');
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        
+        // Mirror the video horizontally for more intuitive user interaction
+        // 1. Get canvas context for drawing
+        const ctx = canvas.getContext('2d');
+        // 2. Move canvas origin to right edge
+        ctx.translate(canvas.width, 0);
+        // 3. Scale horizontally by -1 to flip the image
+        ctx.scale(-1, 1);
+        // 4. Draw the video frame onto the canvas
+        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+
+        canvas.toBlob(blob => {
+            if (!blob) {
+                console.error("Failed to create blob from canvas");
+                return requestAnimationFrame(sendFrame);
+            }
+
+            // Convert Blob to ArrayBuffer for WebSocket transmission
+            const reader = new FileReader();
+            reader.onload = function() {
+                socket.emit('video_frame', reader.result);
+            };
+            reader.readAsArrayBuffer(blob);
+        }, 'image/jpeg');
+    };
+
+    /**
+     * Server Response Handler
+     * Processes frames returned from the server with face mesh/emotion detection
+     * - Converts received ArrayBuffer to Blob
+     * - Updates manipulated video display
+     * - Maintains frame sending loop
+     */
+    socket.on('processed_frame', (frameData) => {
+        const blob = new Blob([frameData], { type: 'image/jpeg' });
+        const imageUrl = URL.createObjectURL(blob);
+        manipulatedVideo.src = imageUrl;
+        manipulatedVideo.onload = () => {
+            URL.revokeObjectURL(imageUrl);
+            requestAnimationFrame(sendFrame);
+        };
+    });
+
+    window.onload = startVideoStream;
+	</script>
+
+</body>
+
+</html>

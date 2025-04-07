@@ -1,0 +1,151 @@
+# Cline Rules for FaceMesh Project
+
+## Documentation Standards
+
+### File Documentation
+- Each Python file must include a docstring header
+- Document classes, methods, and functions with type hints
+- Include usage examples for complex functions
+- Document configuration parameters and their effects
+
+### Code Documentation
+- Use inline comments for complex logic
+- Document data transformations and processing steps
+- Explain ML model architecture decisions
+- Include performance considerations
+
+### README Structure
+- Component-based organization
+- Detailed configuration documentation
+- Clear workflow descriptions
+- Implementation examples
+
+## Project Organization
+
+### Directory Structure
+- /api: Web service implementation
+- /application: Main application logic
+- /pipeline: ML pipeline components
+- /docs: Project documentation
+- /Data, /dataset: Data storage
+- /output: Generated artifacts
+- /memory-bank: Project context and documentation
+
+### File Naming
+- Use snake_case for Python files
+- Descriptive names indicating purpose
+- Consistent naming across related files
+- Avoid generic names like "utils"
+
+## Code Style
+
+### Python Conventions
+- Follow PEP 8 guidelines
+- Use type hints for function signatures
+- Organize imports: stdlib, third-party, local
+- Maximum line length: 79 characters
+
+### Class Structure
+- Properties before methods
+- Public interface methods first
+- Private helper methods last
+- Clear method naming conventions
+
+## Development Workflow
+
+### Version Control
+- Descriptive commit messages
+- Feature branch workflow
+- Regular commits during development
+- Clean commit history
+
+### Testing
+- Unit tests for core functionality
+- Integration tests for workflows
+- Document test coverage requirements
+- Test both success and error cases
+
+### Docker
+- Use multi-stage builds
+- Minimize image size
+- Document environment variables
+- Include health checks
+
+## Configuration Management
+
+### Settings
+- Use config.py for centralized configuration
+- Document all configuration options
+- Provide default values
+- Validate configuration at startup
+
+### Environment Variables
+- Document required variables
+- Use meaningful variable names
+- Provide example configurations
+- Include validation checks
+
+## Implementation Patterns
+
+### Data Processing
+- Validate input data
+- Handle missing values gracefully
+- Document data transformations
+- Include error handling
+
+### Model Training
+- Log training progress
+- Save model checkpoints
+- Monitor evaluation metrics
+- Document hyperparameter choices
+
+### API Integration
+- Use RESTful conventions
+- Document API endpoints
+- Include request/response examples
+- Handle errors gracefully
+
+## Performance
+
+### Optimization
+- Profile critical paths
+- Document bottlenecks
+- Include optimization notes
+- Monitor resource usage
+
+### Resource Management
+- Clean up temporary files
+- Release resources properly
+- Monitor memory usage
+- Handle large datasets efficiently
+
+## Error Handling
+
+### Guidelines
+- Use specific exception types
+- Include error context
+- Log meaningful messages
+- Implement recovery strategies
+
+### Logging
+- Use appropriate log levels
+- Include timestamp and context
+- Structure log messages
+- Monitor error patterns
+
+## Memory Bank Maintenance
+
+### Updates Required When
+1. Adding new components
+2. Changing architecture
+3. Modifying workflows
+4. Updating dependencies
+5. Adding features
+6. Changing configurations
+
+### Update Process
+1. Review all memory bank files
+2. Update relevant sections
+3. Maintain consistency
+4. Document changes
+5. Update .clinerules if needed

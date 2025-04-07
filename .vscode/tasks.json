@@ -1,0 +1,42 @@
+{
+    // See https://go.microsoft.com/fwlink/?LinkId=733558
+    // for the documentation about the tasks.json format
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "docker-build",
+            "type": "shell",
+            "command": "docker build -t meshexpress .",
+            "problemMatcher": []
+        },
+        {
+            "label": "docker-remove",
+            "type": "shell",
+            "command": "docker rm -f meshexpress-container",
+            "problemMatcher": [],
+            "options": {
+                "ignoreReturnCode": true
+            }
+        },
+        {
+            "label": "docker-run",
+            "type": "shell",
+            "command": "docker run -d -p 9009:9009 --name meshexpress-container meshexpress",
+            "problemMatcher": []
+        },
+        {
+            "label": "docker-rebuild-and-run",
+            "type": "shell",
+            "dependsOn": [
+                "docker-remove",
+                "docker-build",
+                "docker-run"
+            ],
+            "problemMatcher": [],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        }
+    ]
+}

@@ -1,0 +1,38 @@
+<html>
+    <head>
+        <title>Logs</title>
+        <style>
+            #log {
+                height: 80vh;
+                width: 80vw;
+                overflow-y: auto;
+                border: 1px solid #ccc;
+                padding: 10px;
+                font-family: monospace;
+                background-color: #f9f9f9;
+            }
+            body {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                height: 100vh;
+                margin: 0;
+            }
+        </style>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.min.js"></script>
+        <script>
+            document.addEventListener('DOMContentLoaded', (event) => {
+                const logContainer = document.getElementById('log');
+                const socket = io();
+
+                socket.on('log_update', (data) => {
+                    logContainer.innerHTML += data + '<br>';
+                    logContainer.scrollTop = logContainer.scrollHeight;
+                });
+            });
+        </script>
+    </head>
+    <body>
+        <div id="log">Loading logs...</div>
+    </body>
+</html>
