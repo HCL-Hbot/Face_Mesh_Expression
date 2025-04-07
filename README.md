@@ -1,6 +1,6 @@
 # FaceMesh Project
 
-24/25 EVML studentes Kevin, Jaapjan, William, Enes
+24/25 EVML students Kevin, Jaapjan, William, Enes
 
 ## Overview
 The FaceMesh Project is a comprehensive system for facial expression recognition, leveraging MediaPipe's FaceMesh solution for accurate facial landmark detection and TensorFlow for machine learning model training and evaluation.
